@@ -17,7 +17,7 @@ These are some examples:
 
 * result
 
-![result](https://raw.github.com/AmirooR/FlannImageCompletion/master/completed_wo_shuffle.png)
+![result](https://raw.github.com/AmirooR/FlannImageCompletion/master/completed_1_wo_shuffle.png)
 
 * histogram of patch offsets
 
