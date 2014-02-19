@@ -14,7 +14,7 @@
 #include <iterator>
 #include <QtGui>
 #include "GCoptimization.h"
-
+#include <algorithm>
 //typedef float EnergyTermType;
 //typedef double EnergyType;
 
@@ -276,6 +276,30 @@ vector<Point2i> maskToNodes(cv::Mat mask)
         return nodes;
 }
 
+Mat rand_select_and_shuffle(Mat in, int num_samples)
+{
+	if ( num_samples > in.rows)
+	{
+		num_samples = in.rows;
+	}
+
+	int total = in.rows;
+	int *idx = new int[total];
+	for(int i = 0; i < total; i++)
+		idx[i] = i;
+	srand(time(0));
+	random_shuffle(&idx[0], &idx[total-1]);
+
+	Mat retMe;
+	retMe.create( num_samples, in.cols, in.type() );
+
+	for(int i = 0; i < num_samples; i++)
+	{
+		in.row(idx[i]).copyTo( retMe.row(i) );
+	}
+
+	return retMe;
+}
 
 int main()
 {
@@ -286,8 +310,10 @@ int main()
         int d = 8;
         topNum = 60;
 
-        char* img_path = "/Users/amirrahimi/Downloads/Applications/cvpr10Data/images/img-op1-p-251t000-resized.jpg";
-        char* mask_path = "/Users/amirrahimi/Desktop/TMP/OccMasks/img-op1-p-251t000_mask.png";
+        char* img_path = "img.PNG";
+		//"/Users/amirrahimi/Downloads/Applications/cvpr10Data/images/img-op1-p-251t000-resized.jpg";
+        char* mask_path = "mask.bmp";
+		//"/Users/amirrahimi/Desktop/TMP/OccMasks/img-op1-p-251t000_mask.png";
         //char* img_path = "/Users/amirrahimi/Desktop/Picture2.png";
         cv::Mat img = cv::imread(img_path);
         mask = cv::imread(mask_path, 0 );
@@ -299,6 +325,8 @@ int main()
         map<int,pair<int,int> > idxToPointMap;
 
         cv::Mat trainMe = imageToFeatureVecCoarse( img_ycb, mask, width, idxToPointMap);
+	//trainMe = rand_select_and_shuffle( trainMe, trainMe.rows/10 );
+
         cout<<"Rows: "<<trainMe.rows<<" Cols: "<<trainMe.cols<<endl;
         cv::Mat hist = Mat::zeros( img.rows*2, img.cols*2, CV_32FC1);
         flann::KDTreeIndexParams params(n_kdd);
@@ -307,7 +335,7 @@ int main()
         flann::Index index(trainMe,params);
         cout<<"Querying..."<<endl;
         int j = 600;//15*8;
-        for( int j = 0; j < trainMe.rows; j++)
+	for( int j = 0; j < trainMe.rows; j++)
         {
                 cv::Mat canvas = img.clone();
                 cv::Mat qMat = trainMe.row(j);
