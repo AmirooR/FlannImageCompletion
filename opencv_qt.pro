@@ -20,7 +20,6 @@ SOURCES += main.cpp \
     LinkedBlockList.cpp \
     graph.cpp \
     GCoptimization.cpp
-INCLUDEPATH += /opt/local/include
 
 HEADERS += \
     LinkedBlockList.h \
@@ -31,5 +30,6 @@ HEADERS += \
 
 unix {
         CONFIG += link_pkgconfig
-        PKGCONFIG += opencv
+        PKGCONFIG += opencv4
 }
+

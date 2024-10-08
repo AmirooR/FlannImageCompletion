@@ -84,14 +84,14 @@ int smoothFn(int p1, int p2, int l1, int l2)
                 {
                         Vec3b v1_a = img_ycb.at<Vec3b>( x1_s_a.y, x1_s_a.x);
                         Vec3b v1_b = img_ycb.at<Vec3b>( x1_s_b.y, x1_s_b.x);
-                        Vec3b diff1 = v1_a - v1_b;
+                        Vec3i diff1 = (Vec3i)v1_a - (Vec3i)v1_b;
 
                         retMe += diff1[0]*diff1[0] + diff1[1]*diff1[1] + diff1[2]*diff1[2];
 
 
                         Vec3b v2_a = img_ycb.at<Vec3b>( x2_s_a.y, x2_s_a.x);
                         Vec3b v2_b = img_ycb.at<Vec3b>( x2_s_b.y, x2_s_b.x);
-                        Vec3b diff2 = v2_a - v2_b;
+                        Vec3i diff2 = (Vec3i)v2_a - (Vec3i)v2_b;
 
                         retMe += diff2[0]*diff2[0] + diff2[1]*diff2[1] + diff2[2]*diff2[2];
                 }
@@ -288,7 +288,11 @@ Mat rand_select_and_shuffle(Mat in, int num_samples)
 	for(int i = 0; i < total; i++)
 		idx[i] = i;
 	srand(time(0));
-	random_shuffle(&idx[0], &idx[total-1]);
+  std::random_device rd;
+  std::mt19937 g(rd());
+  // random_shuffle(&idx[0], &idx[total-1]);
+  // shuffle(std::begin(idx), std::end(idx),
+  shuffle(&idx[0], &idx[total-1], g);
 
 	Mat retMe;
 	retMe.create( num_samples, in.cols, in.type() );
@@ -320,7 +324,8 @@ int main()
         //cv::imshow("salam",img);
         //cv::waitKey(0);
 
-        cv::cvtColor(img,img_ycb,CV_BGR2YCrCb);
+        //cv::cvtColor(img,img_ycb,CV_BGR2YCrCb);
+        cv::cvtColor(img,img_ycb,COLOR_BGR2YCrCb);
         double minVal,maxVal;
         map<int,pair<int,int> > idxToPointMap;
 
